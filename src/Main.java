@@ -23,6 +23,8 @@ public class Main extends JFrame implements ActionListener {
     public static <E> void print(){
         System.out.println();
     }
+        // conter is for fun
+        int conter = 0;
         JPanel ipPanal;
         JLabel baner, resultLabel, bgImage, M4A28;
         JTextField urlEntry;
@@ -102,6 +104,7 @@ public class Main extends JFrame implements ActionListener {
         public void actionPerformed(ActionEvent e) {
 
             String url = urlEntry.getText();
+            conter++;
 
             if(!url.isEmpty())
             {
@@ -119,6 +122,11 @@ public class Main extends JFrame implements ActionListener {
             else {
                 resultLabel.setText("Please enter a valid URL");
                 resultLabel.setForeground(Color.RED);
+            }
+            if(conter == 5 && url.isEmpty()){
+                resultLabel.setText("are you OK ???");
+                resultLabel.setForeground(Color.RED);
+                conter = 0;
             }
         }
 
