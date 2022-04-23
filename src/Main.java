@@ -2,16 +2,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.*;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;    
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
-public class Main extends JFrame implements ActionListener {
+public class Main extends JFrame {
 
     // for debuging
     public static <E> void print(E data){
@@ -22,10 +15,12 @@ public class Main extends JFrame implements ActionListener {
     }
         // conter is for fun
         int counter = 0;
-        JPanel ipPanal;
-        JLabel baner, resultLabel, bgImage, M4A28;
+        JPanel mainPanel;
+        JLabel banerLabel, resultLabel, bgImage, M4A28;
         JTextField urlEntry;
         JButton findButton;
+        JButton goButton;
+        String font = "Arial";
 
     public Main() {
             createAndShowGUI();
@@ -42,28 +37,30 @@ public class Main extends JFrame implements ActionListener {
 
         private void createAndShowGUI() {
 
-            ipPanal = new JPanel(null);
+            mainPanel = new JPanel(null);
             bgImage = new JLabel(new ImageIcon("img/globe.png"));
-            baner = new JLabel("Enter URL", JLabel.CENTER);
+            banerLabel = new JLabel("Enter URL", JLabel.CENTER);
             urlEntry = new JTextField();
             findButton = new JButton("Get IP Address");
+            goButton = new JButton("Go to website");
             resultLabel = new JLabel("", JLabel.CENTER);
             M4A28 = new JLabel("www.twitter.com/M4A28", JLabel.CENTER);
 
-            ipPanal.setPreferredSize(new Dimension(600, 350));
+            mainPanel.setPreferredSize(new Dimension(600, 350));
             bgImage.setBounds(0, 0, 600, 350);
-            baner.setBounds(200, 75, 200, 30);
+            banerLabel.setBounds(200, 75, 200, 30);
             urlEntry.setBounds(150, 115, 300, 36);
-            findButton.setBounds(200, 165, 200, 36);
+            findButton.setBounds(150, 165, 140, 36);
+            goButton.setBounds(310, 165, 140, 36);
             resultLabel.setBounds(0, 225, 600, 30);
             M4A28.setBounds(0, 300, 600, 30);
 
-            baner.setFont(new Font("Arial", Font.PLAIN, 20));
-            M4A28.setFont(new Font("Arial", Font.PLAIN, 20));
-            baner.setForeground(Color.WHITE);
+            banerLabel.setFont(new Font(font, Font.PLAIN, 20));
+            M4A28.setFont(new Font(font, Font.PLAIN, 20));
+            banerLabel.setForeground(Color.WHITE);
             M4A28.setForeground(Color.WHITE);
 
-            urlEntry.setFont(new Font("Arial", Font.PLAIN, 18));
+            urlEntry.setFont(new Font(font, Font.PLAIN, 18));
             urlEntry.setForeground(Color.LIGHT_GRAY);
             urlEntry.setBackground(new Color(10, 10, 10));
             urlEntry.setCaretColor(Color.WHITE);
@@ -72,22 +69,73 @@ public class Main extends JFrame implements ActionListener {
                     urlEntry.getBorder(),
                     BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
-            findButton.setFont(new Font("Arial", Font.BOLD, 16));
+            findButton.setFont(new Font(font, Font.BOLD, 16));
             findButton.setForeground(Color.LIGHT_GRAY);
             findButton.setBackground(Color.DARK_GRAY);
             findButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
             findButton.setFocusable(false);
-            resultLabel.setFont(new Font("Arial", Font.PLAIN, 18));
-            ipPanal.add(baner);
-            ipPanal.add(urlEntry);
-            ipPanal.add(findButton);
-            ipPanal.add(resultLabel);
-            ipPanal.add(resultLabel);
-            ipPanal.add(M4A28);
-            ipPanal.add(bgImage);
-            findButton.addActionListener(this);
 
-            add(ipPanal);
+            goButton.setFont(new Font(font, Font.BOLD, 16));
+            goButton.setForeground(Color.LIGHT_GRAY);
+            goButton.setBackground(Color.DARK_GRAY);
+            goButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+            goButton.setFocusable(false);
+
+            resultLabel.setFont(new Font(font, Font.PLAIN, 18));
+            mainPanel.add(banerLabel);
+            mainPanel.add(urlEntry);
+            mainPanel.add(findButton);
+            mainPanel.add(goButton);
+            mainPanel.add(resultLabel);
+            mainPanel.add(resultLabel);
+            mainPanel.add(M4A28);
+            mainPanel.add(bgImage);
+            findButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String url = urlEntry.getText();
+                    counter++;
+                    if(!url.isEmpty()) {
+                        try {
+                            InetAddress address = InetAddress.getByName(url);
+                            String ip = address.getHostAddress();
+                            resultLabel.setText(ip);
+                            resultLabel.setForeground(Color.GREEN);
+                        }
+                        catch (UnknownHostException ex) {
+                            resultLabel.setText("Invalid URL or Network is Down");
+                            resultLabel.setForeground(Color.RED);
+                        }
+                    }
+                    else {
+                        resultLabel.setText("Please enter a valid URL");
+                        resultLabel.setForeground(Color.RED);
+                    }
+                    funny(url);
+                }
+            });
+            goButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                        String url = urlEntry.getText();
+                        if(!url.isEmpty()) {
+                            try {
+                                openWebpage(new URL("https://" + urlEntry.getText().toString()));
+                            }
+                            catch (Exception ex) {
+                                resultLabel.setText("Invalid URL or Network is Down");
+                                resultLabel.setForeground(Color.RED);
+                            }
+                        }
+                        else {
+                            resultLabel.setText("Please enter a valid URL");
+                            resultLabel.setForeground(Color.RED);
+                        }
+                    }
+            });
+
+            add(mainPanel);
 
             setTitle("IP Finder");
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -97,42 +145,25 @@ public class Main extends JFrame implements ActionListener {
             setVisible(true);
         }
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
 
-            String url = urlEntry.getText();
-            counter++;
-
-            if(!url.isEmpty())
-            {
-                try {
-                    InetAddress address = InetAddress.getByName(url);
-                    String ip = address.getHostAddress();
-                    resultLabel.setText(ip);
-                    resultLabel.setForeground(Color.GREEN);
-                }
-                catch (UnknownHostException ex) {
-                    resultLabel.setText("Invalid URL or Network is Down");
-                    resultLabel.setForeground(Color.RED);
-                }
-            }
-            else {
-                resultLabel.setText("Please enter a valid URL");
-                resultLabel.setForeground(Color.RED);
-            }
+        private void funny(String url){
             if(counter == 5 && url.isEmpty()){
                 resultLabel.setText("are you OK ???");
                 resultLabel.setForeground(Color.RED);
                 counter = 0;
                 try {
+                    String title = "popup";
+                    String msg = "you well go to the my twitter account";
+                    popup(msg, title);
                     openWebpage(new URL("https://twitter.com/M4A28"));
                 } catch (MalformedURLException ex) {
                     throw new RuntimeException(ex);
                 }
             }
-
         }
-
+    private void popup(String msg, String title){
+        JOptionPane.showMessageDialog(null, msg, title, JOptionPane.PLAIN_MESSAGE);
+    }
     public static boolean openWebpage(URI uri) {
         Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
         if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
