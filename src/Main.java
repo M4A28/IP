@@ -1,10 +1,7 @@
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -24,7 +21,7 @@ public class Main extends JFrame implements ActionListener {
         System.out.println();
     }
         // conter is for fun
-        int conter = 0;
+        int counter = 0;
         JPanel ipPanal;
         JLabel baner, resultLabel, bgImage, M4A28;
         JTextField urlEntry;
@@ -49,7 +46,7 @@ public class Main extends JFrame implements ActionListener {
             bgImage = new JLabel(new ImageIcon("img/globe.png"));
             baner = new JLabel("Enter URL", JLabel.CENTER);
             urlEntry = new JTextField();
-            findButton = new JButton("Get IP");
+            findButton = new JButton("Get IP Address");
             resultLabel = new JLabel("", JLabel.CENTER);
             M4A28 = new JLabel("www.twitter.com/M4A28", JLabel.CENTER);
 
@@ -104,7 +101,7 @@ public class Main extends JFrame implements ActionListener {
         public void actionPerformed(ActionEvent e) {
 
             String url = urlEntry.getText();
-            conter++;
+            counter++;
 
             if(!url.isEmpty())
             {
@@ -123,12 +120,46 @@ public class Main extends JFrame implements ActionListener {
                 resultLabel.setText("Please enter a valid URL");
                 resultLabel.setForeground(Color.RED);
             }
-            if(conter == 5 && url.isEmpty()){
+            if(counter == 5 && url.isEmpty()){
                 resultLabel.setText("are you OK ???");
                 resultLabel.setForeground(Color.RED);
-                conter = 0;
+                counter = 0;
+                try {
+                    openWebpage(new URL("https://twitter.com/M4A28"));
+                } catch (MalformedURLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            if(e.getSource().equals(M4A28)){
+                try {
+                    openWebpage(new URL("https://twitter.com/M4A28"));
+                } catch (MalformedURLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         }
+
+    public static boolean openWebpage(URI uri) {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static boolean openWebpage(URL url) {
+        try {
+            return openWebpage(url.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 
 }
