@@ -130,13 +130,7 @@ public class Main extends JFrame implements ActionListener {
                     throw new RuntimeException(ex);
                 }
             }
-            if(e.getSource().equals(M4A28)){
-                try {
-                    openWebpage(new URL("https://twitter.com/M4A28"));
-                } catch (MalformedURLException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
+
         }
 
     public static boolean openWebpage(URI uri) {
@@ -160,6 +154,5 @@ public class Main extends JFrame implements ActionListener {
         }
         return false;
     }
-
 
 }
