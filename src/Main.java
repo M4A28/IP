@@ -2,6 +2,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.*;
 
 public class Main extends JFrame {
@@ -13,7 +15,13 @@ public class Main extends JFrame {
     public static <E> void print(){
         System.out.println();
     }
-        // conter is for fun
+        private static final String URL_REGEX =
+                "^((((https?|ftps?|gopher|telnet|nntp)://| www.)|(mailto:|news:))" +
+                        "(%[0-9A-Fa-f]{2}|[-()_.!~*';/?:@&=+$,A-Za-z0-9])+)" +
+                        "([).!';/?:,][[:blank:]])?$";
+
+    private static final Pattern URL_PATTERN = Pattern.compile(URL_REGEX);
+        // counter is for fun only
         int counter = 0;
         JPanel mainPanel;
         JLabel banerLabel, resultLabel, bgImage, M4A28;
@@ -21,6 +29,7 @@ public class Main extends JFrame {
         JButton findButton;
         JButton goButton;
         String font = "Arial";
+
 
     public Main() {
             createAndShowGUI();
@@ -99,17 +108,14 @@ public class Main extends JFrame {
                         try {
                             InetAddress address = InetAddress.getByName(url);
                             String ip = address.getHostAddress();
-                            resultLabel.setText(ip);
-                            resultLabel.setForeground(Color.GREEN);
+                            result(true, ip);
                         }
                         catch (UnknownHostException ex) {
-                            resultLabel.setText("Invalid URL or Network is Down");
-                            resultLabel.setForeground(Color.RED);
+                            result(false,"Please enter a valid URL" );
                         }
                     }
                     else {
-                        resultLabel.setText("Please enter a valid URL");
-                        resultLabel.setForeground(Color.RED);
+                        result(false,"Please enter a valid URL" );
                     }
                     funny(url);
                 }
@@ -117,20 +123,17 @@ public class Main extends JFrame {
             goButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
                         String url = urlEntry.getText();
-                        if(!url.isEmpty()) {
+                        if(!url.isEmpty() && isUrlValied(url)) {
                             try {
-                                openWebpage(new URL("https://" + urlEntry.getText().toString()));
+                                openWebpage(new URL(urlEntry.getText().toString()));
                             }
                             catch (Exception ex) {
-                                resultLabel.setText("Invalid URL or Network is Down");
-                                resultLabel.setForeground(Color.RED);
+                                result(false,"Please enter a valid URL" );
                             }
                         }
                         else {
-                            resultLabel.setText("Please enter a valid URL");
-                            resultLabel.setForeground(Color.RED);
+                            result(false,"Please enter a valid URL" );
                         }
                     }
             });
@@ -185,5 +188,22 @@ public class Main extends JFrame {
         }
         return false;
     }
+    public static boolean isUrlValied(String url) {
+        if (url == null) {
+            return false;
+        }
+        Matcher matcher = URL_PATTERN.matcher(url);
+        return matcher.matches();
+    }
 
+     private void result(boolean ok, String msg){
+        if(ok){
+            resultLabel.setText(msg);
+            resultLabel.setForeground(Color.GREEN);
+        }
+        else{
+            resultLabel.setText(msg);
+            resultLabel.setForeground(Color.RED);
+        }
+    }
 }
