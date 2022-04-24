@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.*;
+import java.awt.TrayIcon.MessageType;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.*;
@@ -151,21 +152,28 @@ public class Main extends JFrame {
 
         private void funny(String url){
             if(counter == 5 && url.isEmpty()){
-                resultLabel.setText("are you OK ???");
-                resultLabel.setForeground(Color.RED);
+                result(false, "are you ok");
                 counter = 0;
                 try {
                     String title = "popup";
-                    String msg = "you well go to the my twitter account";
-                    popup(msg, title);
+                    String msg = "you well go to my twitter account";
+                    popup(title, msg);
                     openWebpage(new URL("https://twitter.com/M4A28"));
                 } catch (MalformedURLException ex) {
                     throw new RuntimeException(ex);
                 }
             }
         }
-    private void popup(String msg, String title){
-        JOptionPane.showMessageDialog(null, msg, title, JOptionPane.PLAIN_MESSAGE);
+    private void popup (String title, String msg){
+        if (SystemTray.isSupported()) {
+            try{
+                displayTray(title, msg);
+            }catch(AWTException ex){
+            }catch(MalformedURLException ex){
+            }
+        }
+        else
+            JOptionPane.showMessageDialog(null, msg);
     }
     public static boolean openWebpage(URI uri) {
         Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
@@ -205,5 +213,14 @@ public class Main extends JFrame {
             resultLabel.setText(msg);
             resultLabel.setForeground(Color.RED);
         }
+    }
+
+    public void displayTray(String titel, String text) throws AWTException, MalformedURLException {
+        SystemTray tray = SystemTray.getSystemTray();
+        Image image = Toolkit.getDefaultToolkit().createImage("icon.png");
+        TrayIcon trayIcon = new TrayIcon(image);
+        trayIcon.setImageAutoSize(true);
+        tray.add(trayIcon);
+        trayIcon.displayMessage(titel, text, MessageType.INFO);
     }
 }
